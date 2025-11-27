@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>listen on the first time</title>
+  <style>
+    /* Full-viewport, centered image with a clean background */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:#111; /* dark background for contrast; change if you prefer */
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+      box-sizing:border-box;
+    }
+    img#mainImage{
+      max-width:100%;
+      max-height:100%;
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      border-radius:8px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      cursor:zoom-in;
+    }
+    .hint{
+      position:fixed;
+      left:12px;
+      bottom:12px;
+      font-size:0.85rem;
+      opacity:0.8;
+      background:rgba(255,255,255,0.04);
+      padding:6px 10px;
+      border-radius:6px;
+      user-select:none;
+    }
+    /* Lightbox-ish fullscreen when image is clicked */
+    .fullscreen{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.95);
+      z-index:9999;
+    }
+    .fullscreen img{ max-width:95vw; max-height:95vh; cursor:zoom-out; }
+    /* Responsive small-screen tweak */
+    @media (max-width:420px){
+      .hint{ font-size:0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- CHANGE the src below to the path of your image file when you push to GitHub -->
+    <!-- Examples: "images/photo.jpg", "./assets/pic.png", "https://.../image.jpg" -->
+    <img id="mainImage" src="N:\Downloads/aziz.jpg" alt="My image" />
+  </div>
+
+  <div class="hint">Click image to open fullscreen. Change <code>src</code> in the HTML to your file path.</div>
+
+  <script>
+    // Simple click-to-fullscreen lightbox toggle
+    (function(){
+      const img = document.getElementById('mainImage');
+      let fs;
+      function openFull(){
+        fs = document.createElement('div');
+        fs.className = 'fullscreen';
+        const copy = document.createElement('img');
+        copy.src = img.src;
+        copy.alt = img.alt || '';
+        fs.appendChild(copy);
+        fs.addEventListener('click', closeFull);
+        document.body.appendChild(fs);
+      }
+      function closeFull(){
+        if(fs){ fs.removeEventListener('click', closeFull); document.body.removeChild(fs); fs = null; }
+      }
+      img.addEventListener('click', openFull);
+
+      // Accessibility: allow Enter/Space to open when focused
+      img.tabIndex = 0;
+      img.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openFull(); }
+      });
+
+      // If image fails to load, show a fallback message
+      img.addEventListener('error', function(){
+        img.style.display = 'none';
+        const msg = document.createElement('div');
+        msg.style.color = '#ddd';
+        msg.style.textAlign = 'center';
+        msg.innerText = 'Image failed to load. Check the src path in the HTML file.';
+        document.querySelector('.wrap').appendChild(msg);
+      });
+    })();
+  </script>
+</body>
+</html>
